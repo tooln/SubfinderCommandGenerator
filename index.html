@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Command Formatter</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            color: #0073e6;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        pre {
+            background-color: #f7f7f7;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            text-align: left;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #0073e6;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s; /* Added color transition */
+        }
+        button:hover {
+            background-color: #005bb5;
+        }
+        button.clicked { /* New class for clicked state */
+            background-color: black;
+            color: white;
+        }
+        footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Command Formatter</h1>
+        <textarea id="wordsInput" placeholder="Enter words, one per line..."></textarea>
+        <button onclick="generateCommands()">Generate Commands</button>
+        <div id="output"></div>
+        <footer>Powered by Professor Software Solutions</footer>
+    </div>
+
+    <script>
+        function generateCommands() {
+            const words = document.getElementById('wordsInput').value.split('\n').filter(word => word.trim());
+            const output = words.map(word => `subfinder -dL /home/researcher/Subdomain/HackerOne/2020/${word.trim()} -silent -all | httpx -o ${word.trim()}.txt`).join(' && \n');
+            const lines = output.split('\n');
+            let resultHTML = '';
+
+            for (let i = 0; i < lines.length; i += 10) {
+                const chunk = lines.slice(i, i + 10).join('\n');
+                resultHTML += `<pre id="output-${i / 10}">${chunk}</pre>`;
+                if (i + 10 <= lines.length) {
+                    const copyButton = `<button onclick="copyToClipboard('output-${i / 10}', this)">Copy Lines ${i + 1}-${i + 10}</button>`;
+                    resultHTML += `<div>${copyButton}</div>`;
+                }
+            }
+
+            document.getElementById('output').innerHTML = resultHTML;
+        }
+
+        function copyToClipboard(elementId, button) {
+            const text = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    alert('Copied to clipboard');
+                    button.classList.add('clicked'); // Add 'clicked' class on successful copy
+                })
+                .catch(err => console.error('Failed to copy:', err));
+        }
+    </script>
+</body>
+</html>
